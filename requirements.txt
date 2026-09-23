@@ -1,0 +1,25 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.13.5
+pydantic-settings==2.5.2
+python-dotenv==1.0.1
+langgraph==0.2.28
+langchain-core==0.3.6
+
+# Database
+SQLAlchemy==2.0.52
+alembic==1.20.0
+psycopg2-binary==2.9.13
+cryptography==50.0.1
+
+# HTTP client (Instagram OAuth / Graph API calls)
+httpx==0.28.1
+
+# Gemini API (growth coaching LangGraph flow)
+google-genai==2.24.0
+
+# Video frame extraction (growth coaching video analysis)
+opencv-python-headless==5.0.0.93
+
+# Background job scheduling (periodic account sync)
+APScheduler==3.11.3
