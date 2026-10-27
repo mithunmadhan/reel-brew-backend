@@ -152,6 +152,16 @@
   input[type=text]{ flex:1; padding:10px 14px; border:1px solid var(--line); border-radius:999px; font:inherit; font-size:13.5px; background:#fff; }
   .brandform{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
   .kv{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px 24px; font-size:13px; }
+
+  .aud-section{ margin-bottom:22px; }
+  .aud-section:last-child{ margin-bottom:0; }
+  .aud-section h3{ font-size:13px; font-weight:700; margin:0 0 10px; }
+  .aud-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .aud-row:last-child{ border-bottom:none; }
+  .aud-row .label{ flex:0 0 150px; font-weight:600; }
+  .aud-row .bar{ flex:1; height:8px; background:var(--accent-soft); border-radius:999px; overflow:hidden; }
+  .aud-row .bar-fill{ display:block; height:100%; background:var(--accent); border-radius:999px; }
+  .aud-row .pct{ flex:0 0 90px; text-align:right; color:var(--ink-soft); font-size:12px; }
   @media (max-width:900px){ .shell{ grid-template-columns:1fr; } .grid4{ grid-template-columns:repeat(2,1fr); } .cols{ grid-template-columns:1fr; } main{ padding:24px 18px 60px; } }
 </style>
 </head>
@@ -279,6 +289,41 @@
 
   function fmt(n) { return n == null ? "—" : Number(n).toLocaleString(); }
 
+  var AUD_SECTIONS = [
+    { key: "country", label: "Top countries" },
+    { key: "city", label: "Top cities" },
+    { key: "age_gender", label: "Age & gender" }
+  ];
+  function renderAudience(d) {
+    var ab = $("aud-box"); ab.textContent = ""; ab.className = "";
+    if (!d || !Object.keys(d).length) { ab.className = "sub"; ab.textContent = "Not synced yet."; return; }
+
+    var any = false;
+    AUD_SECTIONS.forEach(function (s) {
+      var block = d[s.key];
+      var results = (block && block.results ? block.results.slice() : []);
+      if (!results.length) return;
+      any = true;
+      results.sort(function (x, y) { return (y.value || 0) - (x.value || 0); });
+      var total = results.reduce(function (sum, r) { return sum + (r.value || 0); }, 0) || 1;
+
+      var section = el("div", "aud-section");
+      section.appendChild(el("h3", null, s.label));
+      results.slice(0, 8).forEach(function (r) {
+        var pct = Math.round(((r.value || 0) / total) * 100);
+        var row = el("div", "aud-row");
+        row.appendChild(el("span", "label", (r.dimension_values || []).join(" / ") || "Unknown"));
+        var bar = el("span", "bar"); var fill = el("span", "bar-fill"); fill.style.width = pct + "%"; bar.appendChild(fill);
+        row.appendChild(bar);
+        row.appendChild(el("span", "pct", pct + "% · " + fmt(r.value) + " followers"));
+        section.appendChild(row);
+      });
+      ab.appendChild(section);
+    });
+
+    if (!any) { ab.className = "sub"; ab.textContent = "Instagram hasn't returned demographic data yet — this usually needs at least 100 followers."; }
+  }
+
   function render() {
     var a = data.account, posts = data.posts;
     $("hello").textContent = "Hi, @" + a.username;
@@ -313,9 +358,7 @@
       pb.appendChild(el("p", "sub", "Based on " + data.growth_plan.based_on_post_count + " posts · " + (data.growth_plan.generated_at ? new Date(data.growth_plan.generated_at).toLocaleString() : "")));
     } else pb.appendChild(el("p", "sub", "No plan yet."));
 
-    var d = a.audience_demographics, ab = $("aud-box"); ab.textContent = "";
-    if (d && Object.keys(d).length) ab.appendChild(el("pre", null, JSON.stringify(d, null, 2)));
-    else ab.textContent = "Not synced yet.";
+    renderAudience(a.audience_demographics);
   }
 
   async function load() {
