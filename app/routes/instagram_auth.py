@@ -26,7 +26,7 @@ async def callback(
     error: str | None = Query(default=None),
     error_description: str | None = Query(default=None),
     db: Session = Depends(get_db),
-) -> dict:
+) -> RedirectResponse:
     if error:
         raise HTTPException(status_code=400, detail=error_description or error)
     if not code:
@@ -89,9 +89,7 @@ async def callback(
     db.commit()
     db.refresh(social_account)
 
-    return {
-        "status": "connected",
-        "platform": "instagram",
-        "username": username,
-        "social_account_id": str(social_account.id),
-    }
+    # Send the person to the dashboard, which reads these ids from the URL.
+    return RedirectResponse(
+        f"/app/dashboard.html?social_account_id={social_account.id}&creator_id={social_account.creator_id}"
+    )

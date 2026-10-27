@@ -1,8 +1,10 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.routes import (
@@ -11,6 +13,7 @@ from app.routes import (
     brands,
     chat,
     creators,
+    dashboard,
     feedback,
     growth_plan,
     health,
@@ -37,8 +40,9 @@ app = FastAPI(title=settings.app_name, debug=settings.debug, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:5500"],
-    allow_credentials=True,
+    # Demo setup: no cookies/credentials are used, so any origin may call the API.
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -55,6 +59,13 @@ app.include_router(admin.router)
 app.include_router(growth_plan.router)
 app.include_router(chat.router)
 app.include_router(creators.router)
+app.include_router(dashboard.router)
+
+
+# Serve the landing page + dashboard from the same service (same origin as the API).
+_frontend_dir = Path(__file__).resolve().parent.parent / "frontend"
+if _frontend_dir.is_dir():
+    app.mount("/app", StaticFiles(directory=_frontend_dir, html=True), name="frontend")
 
 
 @app.get("/")

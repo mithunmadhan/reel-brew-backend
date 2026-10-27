@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reelbrew — Creator Growth Studio</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#FAF1E6;
+    --surface:#FFFFFF;
+    --ink:#2B1810;
+    --ink-soft:#7A6355;
+    --accent:#C4356B;
+    --accent-soft:#F3D9E2;
+    --gold:#E0972E;
+    --gold-soft:#F7E3C0;
+    --line:#E7D9C7;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.disp{ font-family:'Fraunces',serif; }
+
+  .wave{ display:flex; align-items:flex-end; gap:3px; height:18px; }
+  .wave span{ width:3px; background:var(--accent); border-radius:2px; opacity:.85; }
+
+  .shell{ display:grid; grid-template-columns:230px 1fr; min-height:100vh; }
+  .side{ background:var(--ink); color:#F6EDE4; padding:28px 20px; display:flex; flex-direction:column; gap:28px; }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:700; font-size:20px; }
+  .brand .dot{ width:10px;height:10px;border-radius:50%; background:var(--accent); }
+  nav{ display:flex; flex-direction:column; gap:4px; }
+  nav a{ color:#D9C8BC; text-decoration:none; padding:9px 12px; border-radius:9px; font-size:14px; font-weight:500; display:flex; align-items:center; gap:10px; }
+  nav a.active{ background:rgba(255,255,255,.08); color:#fff; }
+  nav a:hover{ color:#fff; }
+  .side-foot{ margin-top:auto; font-size:12px; color:#9C8B7F; line-height:1.5; }
+
+  main{ padding:36px 44px 80px; max-width:1180px; }
+  .topline{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:32px; flex-wrap:wrap; gap:16px;}
+  .eyebrow{ text-transform:uppercase; letter-spacing:.12em; font-size:11px; color:var(--accent); font-weight:700; margin-bottom:6px; }
+  h1{ font-size:32px; margin:0 0 6px; font-weight:600; }
+  .sub{ color:var(--ink-soft); font-size:14.5px; margin:0; }
+
+  .acct-pill{ display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--line); padding:9px 16px 9px 10px; border-radius:999px; }
+  .acct-pill img{ width:30px;height:30px;border-radius:50%; }
+  .acct-pill .status{ width:8px;height:8px;border-radius:50%; background:#3A9B5C; display:inline-block; margin-right:5px; }
+  .acct-pill span{ font-size:13px; font-weight:600; }
+  .acct-pill small{ display:block; font-weight:400; color:var(--ink-soft); font-size:11.5px; }
+
+  .grid4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:30px; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; }
+  .stat-label{ font-size:12px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+  .stat-value{ font-family:'Fraunces',serif; font-size:28px; font-weight:600; margin:6px 0 2px; }
+  .stat-delta{ font-size:12.5px; font-weight:600; }
+  .up{ color:#2E8B57; } .down{ color:#B9484E; }
+
+  .cols{ display:grid; grid-template-columns:1.3fr 1fr; gap:20px; margin-bottom:30px; }
+  .panel{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; }
+  .panel h2{ font-size:17px; font-weight:600; margin:0 0 14px; display:flex; align-items:center; justify-content:space-between; }
+  .panel h2 .tag{ font-family:'Inter'; font-size:11px; font-weight:700; color:var(--gold); background:var(--gold-soft); padding:3px 9px; border-radius:999px; }
+
+  svg.trend{ width:100%; height:130px; }
+
+  .feedback-item{ padding:13px 0; border-top:1px solid var(--line); }
+  .feedback-item:first-child{ border-top:none; padding-top:0; }
+  .feedback-item .cap{ font-size:13.5px; color:var(--ink-soft); margin-bottom:6px; }
+  .feedback-item .note{ font-size:13.5px; line-height:1.5; }
+  .feedback-item .note b{ color:var(--accent); }
+
+  .gallery{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .vid-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+  .vid-thumb{ height:150px; background:linear-gradient(150deg,var(--accent),#8A2450); position:relative; display:flex; align-items:center; justify-content:center; }
+  .vid-thumb .play{ width:38px;height:38px;border-radius:50%; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; }
+  .vid-thumb .play:before{ content:''; border-left:11px solid var(--accent); border-top:7px solid transparent; border-bottom:7px solid transparent; margin-left:3px; }
+  .vid-thumb .badge{ position:absolute; top:9px; left:9px; background:rgba(0,0,0,.4); color:#fff; font-size:10px; padding:3px 8px; border-radius:999px; }
+  .vid-body{ padding:12px 14px; }
+  .vid-body .t{ font-size:13px; font-weight:600; margin-bottom:3px; }
+  .vid-body .m{ font-size:11.5px; color:var(--ink-soft); }
+
+  .new-vid{ border:1.5px dashed var(--line); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; color:var(--ink-soft); cursor:pointer; min-height:216px; }
+  .new-vid .plus{ width:34px;height:34px;border-radius:50%; background:var(--accent-soft); color:var(--accent); font-size:20px; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  .new-vid span{ font-size:12.5px; font-weight:600; }
+
+  .topics{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .topics span{ background:var(--accent-soft); color:var(--accent); font-size:12px; font-weight:600; padding:6px 12px; border-radius:999px; }
+
+  button.primary{ background:var(--accent); color:#fff; border:none; padding:10px 18px; border-radius:999px; font-weight:600; font-size:13.5px; cursor:pointer; }
+  button.ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); padding:10px 18px; border-radius:999px; font-weight:600; font-size:13.5px; cursor:pointer; }
+
+  .page{ display:none; }
+  .page.active{ display:block; }
+
+  .flow{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin:26px 0 32px; position:relative; }
+  .flow-step{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:20px; position:relative; margin-right:16px; }
+  .flow-step .num{ width:26px;height:26px;border-radius:50%; background:var(--accent); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+  .flow-step.done .num{ background:#2E8B57; }
+  .flow-step h3{ font-size:14px; margin:0 0 6px; font-weight:600; }
+  .flow-step p{ font-size:12.5px; color:var(--ink-soft); margin:0; line-height:1.5; }
+  .flow-step .arrow{ position:absolute; right:-24px; top:50%; transform:translateY(-50%); color:var(--line); font-size:20px; z-index:2; }
+
+  .topic-pick{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:26px; }
+  .topic-card{ background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:16px; cursor:pointer; }
+  .topic-card.selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .topic-card .why{ font-size:11.5px; color:var(--ink-soft); margin-top:6px; }
+
+  .script-box{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:20px; font-size:13.5px; line-height:1.7; margin-bottom:20px; }
+  .script-box .lang{ display:inline-block; font-size:11px; font-weight:700; color:var(--gold); background:var(--gold-soft); padding:3px 10px; border-radius:999px; margin-bottom:12px; }
+
+  table.insights{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.insights th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); padding:10px 12px; border-bottom:1.5px solid var(--line); }
+  table.insights td{ padding:13px 12px; border-bottom:1px solid var(--line); }
+  table.insights tr:last-child td{ border-bottom:none; }
+  .post-thumb{ display:flex; align-items:center; gap:10px; }
+  .post-thumb .sq{ width:36px;height:36px;border-radius:8px; background:linear-gradient(150deg,var(--accent),#8A2450); flex-shrink:0; }
+  .post-thumb .cap{ font-size:12.5px; max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pillmini{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; }
+  .pillmini.good{ background:#DCF0E3; color:#2E8B57; }
+  .pillmini.mid{ background:var(--gold-soft); color:var(--gold); }
+
+  .acc-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:20px; }
+  .acc-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:22px; display:flex; align-items:center; gap:16px; }
+  .acc-card .logo{ width:48px;height:48px;border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#fff; }
+  .acc-card .logo.ig{ background:linear-gradient(150deg,#C4356B,#E0972E); }
+  .acc-card .logo.yt{ background:#D6362E; }
+  .acc-card .info h3{ font-size:15px; margin:0 0 3px; font-weight:600; }
+  .acc-card .info p{ font-size:12.5px; color:var(--ink-soft); margin:0; }
+  .acc-card .cta{ margin-left:auto; }
+
+  .msg{ padding:12px 14px; border-radius:10px; font-size:13.5px; margin:0 0 16px; }
+  .msg.err{ background:#FBE4E4; color:#9B2C2C; } .msg.info{ background:var(--gold-soft); color:#7A4B00; }
+  .spin{ color:var(--ink-soft); font-size:13px; }
+  .toolbar{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  button:disabled{ opacity:.55; cursor:wait; }
+  .post{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; margin-bottom:12px; }
+  .post .cap{ font-size:13.5px; margin-bottom:8px; white-space:pre-wrap; }
+  .post .meta{ font-size:12px; color:var(--ink-soft); margin-bottom:10px; }
+  .fb{ background:var(--accent-soft); border-radius:10px; padding:12px 14px; font-size:13.5px; line-height:1.55; white-space:pre-wrap; margin-top:10px; }
+  .plan{ white-space:pre-wrap; font-size:14px; line-height:1.65; }
+  .match{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; margin-bottom:12px; }
+  .match .top{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:6px; }
+  .match .name{ font-weight:600; font-size:15px; }
+  .match .why{ font-size:13px; color:var(--ink-soft); white-space:pre-wrap; line-height:1.55; }
+  .chatlog{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; min-height:240px; max-height:420px; overflow:auto; margin-bottom:12px; }
+  .bubble{ max-width:80%; padding:10px 14px; border-radius:14px; margin:0 0 10px; font-size:13.5px; line-height:1.55; white-space:pre-wrap; }
+  .bubble.user{ background:var(--accent); color:#fff; margin-left:auto; }
+  .bubble.assistant{ background:var(--accent-soft); }
+  .chatrow{ display:flex; gap:10px; }
+  input[type=text]{ flex:1; padding:10px 14px; border:1px solid var(--line); border-radius:999px; font:inherit; font-size:13.5px; background:#fff; }
+  .brandform{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .kv{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px 24px; font-size:13px; }
+  @media (max-width:900px){ .shell{ grid-template-columns:1fr; } .grid4{ grid-template-columns:repeat(2,1fr); } .cols{ grid-template-columns:1fr; } main{ padding:24px 18px 60px; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="dot"></span>Reelbrew</div>
+    <nav>
+      <a class="active" href="#" data-page="overview">Overview</a>
+      <a href="#" data-page="posts">Posts &amp; AI Feedback</a>
+      <a href="#" data-page="growth">Growth Plan</a>
+      <a href="#" data-page="brands">Brand Matches</a>
+      <a href="#" data-page="coach">AI Coach</a>
+      <a href="#" data-page="audience">Audience</a>
+    </nav>
+    <div class="side-foot"><a href="index.html" style="color:#D9C8BC;">&larr; Landing page</a></div>
+  </aside>
+  <main>
+    <div id="banner"></div>
+
+    <section class="page active" id="page-overview">
+      <div class="topline">
+        <div><div class="eyebrow">Growth Studio</div><h1 id="hello">Your dashboard</h1>
+        <p class="sub" id="subline">Live data from your connected Instagram account.</p></div>
+        <div class="acct-pill"><div><span><span class="status"></span><span id="pill-name">—</span></span><small id="pill-sub">Instagram</small></div></div>
+      </div>
+      <div class="toolbar">
+        <button class="primary" id="btn-sync">Sync posts from Instagram</button>
+        <button class="ghost" id="btn-refresh">Refresh profile</button>
+      </div>
+      <div class="grid4">
+        <div class="card"><div class="stat-label">Followers</div><div class="stat-value" id="s-followers">—</div></div>
+        <div class="card"><div class="stat-label">Posts synced</div><div class="stat-value" id="s-posts">—</div></div>
+        <div class="card"><div class="stat-label">Avg likes / post</div><div class="stat-value" id="s-likes">—</div></div>
+        <div class="card"><div class="stat-label">Engagement rate</div><div class="stat-value" id="s-eng">—</div></div>
+      </div>
+      <div class="panel"><h2>How it works</h2>
+        <p class="sub">1&nbsp;·&nbsp;Sync posts &nbsp; 2&nbsp;·&nbsp;Generate AI feedback on a post &nbsp; 3&nbsp;·&nbsp;Build your growth plan &nbsp; 4&nbsp;·&nbsp;See brand matches &nbsp; 5&nbsp;·&nbsp;Ask the AI coach.</p>
+      </div>
+    </section>
+
+    <section class="page" id="page-posts">
+      <div class="topline"><div><div class="eyebrow">Posts</div><h1>Posts &amp; AI feedback</h1>
+      <p class="sub">Generate coaching feedback on any post (analyses the caption, and the video when there is one).</p></div></div>
+      <div id="post-list"></div>
+    </section>
+
+    <section class="page" id="page-growth">
+      <div class="topline"><div><div class="eyebrow">Growth Plan</div><h1>Your growth plan</h1>
+      <p class="sub">Synthesised from the AI feedback on your posts. Generate feedback on a few posts first.</p></div></div>
+      <div class="toolbar"><button class="primary" id="btn-plan">Generate growth plan</button></div>
+      <div class="panel" id="plan-box"><p class="sub">No plan yet.</p></div>
+    </section>
+
+    <section class="page" id="page-brands">
+      <div class="topline"><div><div class="eyebrow">Brand Matches</div><h1>Brands that fit you</h1>
+      <p class="sub">Scored on audience fit, engagement quality and content fit. Brands here are test brands.</p></div></div>
+      <div class="brandform">
+        <input type="text" id="brand-name" placeholder="Test brand name, e.g. CalmJournal">
+        <input type="text" id="brand-ind" placeholder="Industry, e.g. wellness">
+        <button class="ghost" id="btn-addbrand">Add test brand</button>
+        <button class="primary" id="btn-matches">Find matches</button>
+      </div>
+      <div id="match-list"><p class="sub">Add at least one brand, then click Find matches.</p></div>
+    </section>
+
+    <section class="page" id="page-coach">
+      <div class="topline"><div><div class="eyebrow">AI Coach</div><h1>Ask your growth coach</h1>
+      <p class="sub">It remembers the recent conversation.</p></div></div>
+      <div class="chatlog" id="chatlog"></div>
+      <div class="chatrow"><input type="text" id="chat-in" placeholder="e.g. What should I post next week?"><button class="primary" id="btn-send">Send</button></div>
+    </section>
+
+    <section class="page" id="page-audience">
+      <div class="topline"><div><div class="eyebrow">Audience</div><h1>Audience insights</h1>
+      <p class="sub">Demographics from Instagram (needs enough followers for Instagram to share them).</p></div></div>
+      <div class="toolbar"><button class="primary" id="btn-insights">Sync audience insights</button></div>
+      <div class="panel"><div id="aud-box" class="sub">Not synced yet.</div></div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+  var saId = params.get("social_account_id") || store.get("rb_sa");
+  var crId = params.get("creator_id") || store.get("rb_cr");
+  if (params.get("social_account_id")) { store.set("rb_sa", saId); store.set("rb_cr", crId); history.replaceState(null, "", location.pathname); }
+
+  var onApp = location.protocol.indexOf("http") === 0 && location.pathname.indexOf("/app/") === 0;
+  var isLocal = ["localhost", "127.0.0.1"].indexOf(location.hostname) !== -1;
+  var API = onApp ? location.origin : (isLocal ? "http://127.0.0.1:8000" : "https://reelbrew-api.onrender.com");
+
+  var data = null, brandNames = {};
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function banner(text, kind) { var b = $("banner"); b.textContent = ""; if (text) b.appendChild(el("div", "msg " + (kind || "info"), text)); }
+
+  async function api(method, path, body) {
+    var opts = { method: method, headers: {} };
+    if (body !== undefined) { opts.headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(body); }
+    var res = await fetch(API + path, opts);
+    var json = null; try { json = await res.json(); } catch (e) {}
+    if (!res.ok) { var d = json && json.detail; throw new Error(typeof d === "string" ? d : (d ? JSON.stringify(d) : "Request failed (" + res.status + ")")); }
+    return json;
+  }
+  async function busy(btn, label, fn) {
+    var old = btn.textContent; btn.disabled = true; btn.textContent = label; banner("");
+    try { await fn(); } catch (e) { banner(e.message, "err"); }
+    btn.disabled = false; btn.textContent = old;
+  }
+
+  document.querySelectorAll("nav a").forEach(function (a) {
+    a.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
+      document.querySelectorAll("nav a").forEach(function (x) { x.classList.remove("active"); });
+      $("page-" + a.dataset.page).classList.add("active"); a.classList.add("active"); window.scrollTo(0, 0);
+    });
+  });
+
+  function fmt(n) { return n == null ? "—" : Number(n).toLocaleString(); }
+
+  function render() {
+    var a = data.account, posts = data.posts;
+    $("hello").textContent = "Hi, @" + a.username;
+    $("pill-name").textContent = a.username;
+    $("pill-sub").textContent = "Instagram · Connected";
+    $("s-followers").textContent = fmt(a.follower_count);
+    $("s-posts").textContent = posts.length;
+    var likes = posts.reduce(function (s, p) { return s + (p.like_count || 0); }, 0);
+    var coms = posts.reduce(function (s, p) { return s + (p.comments_count || 0); }, 0);
+    $("s-likes").textContent = posts.length ? (likes / posts.length).toFixed(1) : "—";
+    $("s-eng").textContent = posts.length && a.follower_count ? (((likes + coms) / posts.length / a.follower_count) * 100).toFixed(2) + "%" : "—";
+
+    brandNames = {}; data.brands.forEach(function (b) { brandNames[b.brand_id] = b; });
+
+    var list = $("post-list"); list.textContent = "";
+    if (!posts.length) list.appendChild(el("p", "sub", "No posts yet. Go to Overview and click “Sync posts from Instagram”."));
+    posts.forEach(function (p) {
+      var box = el("div", "post");
+      box.appendChild(el("div", "cap", p.caption || "(no caption)"));
+      box.appendChild(el("div", "meta", (p.media_type || "post") + " · " + fmt(p.like_count) + " likes · " + fmt(p.comments_count) + " comments" + (p.posted_at ? " · " + new Date(p.posted_at).toLocaleDateString() : "")));
+      var fbBox = el("div"); if (p.feedback_text) fbBox.appendChild(el("div", "fb", p.feedback_text));
+      var btn = el("button", "ghost", p.feedback_text ? "Regenerate AI feedback" : "Generate AI feedback");
+      btn.addEventListener("click", function () { busy(btn, "Analysing…", async function () {
+        var r = await api("POST", "/feedback/generate/" + p.post_id); p.feedback_text = r.feedback_text; render();
+      }); });
+      box.appendChild(btn); box.appendChild(fbBox); list.appendChild(box);
+    });
+
+    var pb = $("plan-box"); pb.textContent = "";
+    if (data.growth_plan) {
+      pb.appendChild(el("div", "plan", data.growth_plan.plan_text));
+      pb.appendChild(el("p", "sub", "Based on " + data.growth_plan.based_on_post_count + " posts · " + (data.growth_plan.generated_at ? new Date(data.growth_plan.generated_at).toLocaleString() : "")));
+    } else pb.appendChild(el("p", "sub", "No plan yet."));
+
+    var d = a.audience_demographics, ab = $("aud-box"); ab.textContent = "";
+    if (d && Object.keys(d).length) ab.appendChild(el("pre", null, JSON.stringify(d, null, 2)));
+    else ab.textContent = "Not synced yet.";
+  }
+
+  async function load() {
+    if (!saId) {
+      $("hello").textContent = "Connect your Instagram first";
+      banner("No account connected yet. Use “Connect Instagram” on the landing page, then you’ll land back here.", "info");
+      document.querySelectorAll("button").forEach(function (b) { b.disabled = true; });
+      return;
+    }
+    try { data = await api("GET", "/dashboard/" + saId); crId = data.account.creator_id; store.set("rb_cr", crId); render(); }
+    catch (e) { banner("Could not load your dashboard: " + e.message + " (the server may be waking up — wait 30–60s and refresh).", "err"); }
+  }
+
+  $("btn-sync").addEventListener("click", function () { busy(this, "Syncing…", async function () {
+    var r = await api("POST", "/posts/sync/" + saId); await load(); banner(r.new_posts_saved + " new post(s) saved.", "info");
+  }); });
+  $("btn-refresh").addEventListener("click", function () { busy(this, "Refreshing…", async function () { await api("POST", "/accounts/refresh/" + saId); await load(); }); });
+  $("btn-insights").addEventListener("click", function () { busy(this, "Syncing…", async function () { await api("POST", "/insights/sync/" + saId); await load(); }); });
+  $("btn-plan").addEventListener("click", function () { busy(this, "Generating…", async function () { await api("POST", "/growth-plan/generate/" + crId); await load(); }); });
+
+  $("btn-addbrand").addEventListener("click", function () { busy(this, "Adding…", async function () {
+    var n = $("brand-name").value.trim(); if (!n) throw new Error("Enter a brand name.");
+    await api("POST", "/brands/test", { company_name: n, industry_category: $("brand-ind").value.trim() || null });
+    $("brand-name").value = ""; $("brand-ind").value = ""; await load(); banner("Brand added. Click Find matches.", "info");
+  }); });
+  $("btn-matches").addEventListener("click", function () { busy(this, "Scoring…", async function () {
+    var r = await api("GET", "/creators/" + crId + "/suggested-brands"); var box = $("match-list"); box.textContent = "";
+    if (!r.matches.length) box.appendChild(el("p", "sub", "No matches" + (r.rejected_count ? " (" + r.rejected_count + " rejected by the fraud check)" : "") + ". Add a test brand first."));
+    r.matches.forEach(function (m) {
+      var b = brandNames[m.brand_id] || {}; var card = el("div", "match"); var top = el("div", "top");
+      top.appendChild(el("div", "name", (b.company_name || "Brand") + (b.industry_category ? " · " + b.industry_category : "")));
+      top.appendChild(el("span", "pillmini " + (m.match_score >= 0.7 ? "good" : "mid"), Math.round((m.match_score || 0) * 100) + "% match" + (m.is_non_obvious ? " · non-obvious" : "")));
+      card.appendChild(top); card.appendChild(el("div", "why", m.match_reasoning || "")); box.appendChild(card);
+    });
+  }); });
+
+  function bubble(role, text) { var b = el("div", "bubble " + role, text); $("chatlog").appendChild(b); $("chatlog").scrollTop = 1e9; }
+  async function send() {
+    var inp = $("chat-in"), msg = inp.value.trim(); if (!msg) return; inp.value = ""; bubble("user", msg);
+    var btn = $("btn-send"); await busy(btn, "…", async function () {
+      var r = await api("POST", "/chat/" + crId + "/message", { message: msg }); bubble("assistant", r.reply);
+    });
+  }
+  $("btn-send").addEventListener("click", send);
+  $("chat-in").addEventListener("keydown", function (e) { if (e.key === "Enter") send(); });
+
+  load();
+})();
+</script>
+</body>
+</html>

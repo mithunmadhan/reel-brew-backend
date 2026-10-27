@@ -79,11 +79,22 @@
     <h1>Grow your Instagram with AI</h1>
     <p>Connect your Instagram Business or Creator account to get AI-powered feedback, growth plans, and brand matches tailored to your content.</p>
     <button id="connect-btn" type="button">Connect Instagram</button>
+    <p style="margin:20px 0 0; font-size:0.85rem;">
+      <a href="dashboard.html" style="color:#7c3aed; font-weight:600; text-decoration:none;">Open my dashboard &rarr;</a>
+    </p>
   </main>
 
   <script>
+    // Uses localhost while you're testing this page on your own machine,
+    // and automatically switches to the deployed API once this page itself
+    // is served from somewhere other than localhost.
+    var PROD_API_BASE = "https://reelbrew-api.onrender.com";
+    var LOCAL_API_BASE = "http://127.0.0.1:8000";
+    var isLocal = ["localhost", "127.0.0.1"].indexOf(window.location.hostname) !== -1;
+    var apiBase = isLocal ? LOCAL_API_BASE : PROD_API_BASE;
+
     document.getElementById("connect-btn").addEventListener("click", function () {
-      window.location.href = "http://127.0.0.1:8000/auth/instagram/connect";
+      window.location.href = apiBase + "/auth/instagram/connect";
     });
   </script>
 </body>
