@@ -42,8 +42,11 @@ class GrowthCoachingState(TypedDict, total=False):
 def _build_caption_prompt(caption: str | None, like_count: int | None, comments_count: int | None) -> str:
     return (
         "You are a social media growth coach. Based on this Instagram post's data, give ONE "
-        "specific, actionable piece of feedback to help improve future posts. Respond in "
-        "1-2 sentences only, with no preamble or bullet points.\n\n"
+        "specific, actionable piece of feedback to help improve future posts. Your feedback "
+        "must quote or directly reference a specific word, phrase, or detail from THIS caption "
+        "— do not give advice generic enough that it could apply to any Instagram post. If the "
+        "caption already does something well, say what specifically. Respond in 1-2 sentences "
+        "only, with no preamble or bullet points.\n\n"
         f"Caption: {caption or '(no caption)'}\n"
         f"Likes: {like_count if like_count is not None else 'unknown'}\n"
         f"Comments: {comments_count if comments_count is not None else 'unknown'}"
@@ -54,12 +57,18 @@ def _build_frame_analysis_prompt(frame_count: int) -> str:
     return (
         f"You are a social media growth coach reviewing {frame_count} evenly-spaced frames "
         "sampled from an Instagram video, in chronological order (the first image is the "
-        "opening hook). Give specific, actionable feedback covering:\n"
-        "1. The hook — does the first frame grab attention?\n"
-        "2. Pacing — based on how much the frames change across the sequence, does the video "
-        "feel well-paced or dragging?\n"
-        "3. Visual quality — lighting, framing, clarity.\n"
-        "4. Any text overlays visible — are they readable and well-placed?\n\n"
+        "opening hook). Describe what is actually visible in these specific frames — subject, "
+        "setting, colors, on-screen text, action — and base your feedback on those concrete "
+        "details, not generic video-editing checklist advice. Cover:\n"
+        "1. The hook — what exactly is in the first frame, and does that specific image grab "
+        "attention?\n"
+        "2. Pacing — based on how much the frames actually change across the sequence, does "
+        "the video feel well-paced or dragging?\n"
+        "3. Visual quality — lighting, framing, clarity, specific to what's shown.\n"
+        "4. Any text overlays visible — quote them if possible, and say whether they're "
+        "readable and well-placed.\n\n"
+        "Avoid feedback so generic it would apply to almost any video (e.g. don't just say "
+        "'make the hook more dynamic' with no reference to what's actually in this video). "
         "Respond in 3-5 sentences total, no preamble or bullet points."
     )
 

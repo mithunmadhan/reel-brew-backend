@@ -43,6 +43,12 @@ def _build_synthesis_prompt(feedback_texts: list[str]) -> str:
         "1. What's working well\n"
         "2. What to fix\n"
         "3. 3 concrete next steps\n\n"
+        "Ground every point in a specific detail, example, or quote pulled from the notes "
+        "above (a caption phrase, a visual element, a recurring subject) — not generic social "
+        "media advice that would apply to any creator regardless of what they post. If a "
+        "pattern you'd otherwise flag (like 'add a call to action') is genuinely common to "
+        "nearly all creators, explain it in terms of THIS creator's specific content so it's "
+        "clear the advice was derived from their actual posts, not a generic checklist. "
         "Write it as a clear, actionable roadmap in plain text under those three headers. "
         "Synthesize the patterns — don't just repeat the individual notes verbatim."
     )
