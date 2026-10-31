@@ -162,6 +162,24 @@
   .aud-row .bar{ flex:1; height:8px; background:var(--accent-soft); border-radius:999px; overflow:hidden; }
   .aud-row .bar-fill{ display:block; height:100%; background:var(--accent); border-radius:999px; }
   .aud-row .pct{ flex:0 0 90px; text-align:right; color:var(--ink-soft); font-size:12px; }
+
+  .fbsum{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+  .fbsum div{ border-radius:10px; padding:10px 14px; font-size:13.5px; line-height:1.5; }
+  .fbsum .good{ background:#DCF0E3; } .fbsum .fix{ background:var(--gold-soft); }
+  .fbsum b{ display:block; font-size:11px; letter-spacing:.06em; text-transform:uppercase; margin-bottom:3px; }
+  .cats{ margin-top:10px; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .cat + .cat{ border-top:1px solid var(--line); }
+  .cat-head{ width:100%; display:flex; align-items:center; gap:12px; text-align:left; background:var(--surface); border:none; padding:11px 14px; cursor:pointer; font:inherit; color:var(--ink); }
+  .cat-head:hover{ background:var(--bg); }
+  .cat-head .name{ font-weight:700; font-size:13px; flex:0 0 70px; }
+  .cat-head .one{ flex:1; font-size:13px; color:var(--ink-soft); }
+  .cat-head .chev{ font-size:11px; color:var(--ink-soft); }
+  .cat-body{ padding:4px 14px 12px; background:var(--bg); }
+  .ex{ padding:10px 0; border-top:1px solid var(--line); font-size:13px; line-height:1.55; }
+  .ex:first-child{ border-top:none; }
+  .ex .from{ font-size:11.5px; color:var(--ink-soft); margin-bottom:3px; }
+  .ex .fix{ color:var(--accent); font-weight:600; }
+  @media (max-width:700px){ .fbsum{ grid-template-columns:1fr; } .cat-head .name{ flex-basis:58px; } }
   @media (max-width:900px){ .shell{ grid-template-columns:1fr; } .grid4{ grid-template-columns:repeat(2,1fr); } .cols{ grid-template-columns:1fr; } main{ padding:24px 18px 60px; } }
 </style>
 </head>
@@ -171,7 +189,7 @@
     <div class="brand"><span class="dot"></span>Reelbrew</div>
     <nav>
       <a class="active" href="#" data-page="overview">Overview</a>
-      <a href="#" data-page="posts">Posts &amp; AI Feedback</a>
+      <a href="#" data-page="posts">Growth Feedback</a>
       <a href="#" data-page="growth">Growth Plan</a>
       <a href="#" data-page="brands">Brand Matches</a>
       <a href="#" data-page="coach">AI Coach</a>
@@ -204,8 +222,8 @@
     </section>
 
     <section class="page" id="page-posts">
-      <div class="topline"><div><div class="eyebrow">Posts</div><h1>Posts &amp; AI feedback</h1>
-      <p class="sub">Generate coaching feedback on any post (analyses the caption, and the video when there is one).</p></div></div>
+      <div class="topline"><div><div class="eyebrow">Growth Feedback</div><h1>Growth feedback</h1>
+      <p class="sub">Pick a post and generate feedback. You get what is working, what to fix, and examples from your own posts for video, text and content.</p></div></div>
       <div id="post-list"></div>
     </section>
 
@@ -324,6 +342,43 @@
     if (!any) { ab.className = "sub"; ab.textContent = "Instagram hasn't returned demographic data yet — this usually needs at least 100 followers."; }
   }
 
+  var CAT_LABELS = { video: "Video", text: "Text", content: "Content" };
+  function renderFeedback(p) {
+    var wrap = el("div");
+    var st = p.feedback_structured;
+    if (!st) { if (p.feedback_text) wrap.appendChild(el("div", "fb", p.feedback_text)); return wrap; }
+
+    var sum = el("div", "fbsum");
+    var g = el("div", "good"); g.appendChild(el("b", null, "What is working")); g.appendChild(document.createTextNode(st.working_well || "—"));
+    var f = el("div", "fix"); f.appendChild(el("b", null, "What to fix")); f.appendChild(document.createTextNode(st.to_fix || "—"));
+    sum.appendChild(g); sum.appendChild(f); wrap.appendChild(sum);
+
+    var cats = el("div", "cats");
+    ["video", "text", "content"].forEach(function (key) {
+      var block = st[key]; if (!block) return;
+      var cat = el("div", "cat");
+      var head = el("button", "cat-head"); head.type = "button"; head.setAttribute("aria-expanded", "false");
+      head.appendChild(el("span", "name", CAT_LABELS[key]));
+      head.appendChild(el("span", "one", block.summary || ""));
+      var chev = el("span", "chev", "▸ " + (block.examples && block.examples.length ? block.examples.length + " example" + (block.examples.length > 1 ? "s" : "") : "no examples")); head.appendChild(chev);
+      var body = el("div", "cat-body"); body.hidden = true;
+      (block.examples || []).forEach(function (ex) {
+        var row = el("div", "ex");
+        var when = ex.post && ex.post.date ? new Date(ex.post.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : null;
+        row.appendChild(el("div", "from", "From your post" + (when ? " on " + when : "") + (ex.post && ex.post.snippet ? ": “" + ex.post.snippet + "”" : "")));
+        row.appendChild(el("div", null, ex.observation));
+        if (ex.suggestion) row.appendChild(el("div", "fix", "Try: " + ex.suggestion));
+        body.appendChild(row);
+      });
+      head.addEventListener("click", function () {
+        var open = body.hidden; body.hidden = !open; head.setAttribute("aria-expanded", String(open));
+      });
+      cat.appendChild(head); cat.appendChild(body); cats.appendChild(cat);
+    });
+    wrap.appendChild(cats);
+    return wrap;
+  }
+
   function render() {
     var a = data.account, posts = data.posts;
     $("hello").textContent = "Hi, @" + a.username;
@@ -344,10 +399,12 @@
       var box = el("div", "post");
       box.appendChild(el("div", "cap", p.caption || "(no caption)"));
       box.appendChild(el("div", "meta", (p.media_type || "post") + " · " + fmt(p.like_count) + " likes · " + fmt(p.comments_count) + " comments" + (p.posted_at ? " · " + new Date(p.posted_at).toLocaleDateString() : "")));
-      var fbBox = el("div"); if (p.feedback_text) fbBox.appendChild(el("div", "fb", p.feedback_text));
-      var btn = el("button", "ghost", p.feedback_text ? "Regenerate AI feedback" : "Generate AI feedback");
+      var fbBox = el("div"); fbBox.appendChild(renderFeedback(p));
+      var has = p.feedback_structured || p.feedback_text;
+      var btn = el("button", "ghost", has ? "Regenerate feedback" : "Generate feedback");
       btn.addEventListener("click", function () { busy(btn, "Analysing…", async function () {
-        var r = await api("POST", "/feedback/generate/" + p.post_id); p.feedback_text = r.feedback_text; render();
+        var r = await api("POST", "/feedback/generate/" + p.post_id);
+        p.feedback_text = r.feedback_text; p.feedback_structured = r.structured || null; render();
       }); });
       box.appendChild(btn); box.appendChild(fbBox); list.appendChild(box);
     });

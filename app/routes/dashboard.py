@@ -1,3 +1,4 @@
+import json
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -8,6 +9,16 @@ from app.database import get_db
 from app.models import AIFeedback, Brand, GrowthPlan, Post, SocialAccount
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
+
+
+def _parse_structured(notes: str | None) -> dict | None:
+    if not notes:
+        return None
+    try:
+        value = json.loads(notes)
+    except (json.JSONDecodeError, TypeError):
+        return None
+    return value if isinstance(value, dict) else None
 
 
 @router.get("/{social_account_id}")
@@ -58,6 +69,9 @@ def get_dashboard(social_account_id: uuid.UUID, db: Session = Depends(get_db)) -
                 "comments_count": p.comments_count,
                 "posted_at": p.posted_at.isoformat() if p.posted_at else None,
                 "feedback_text": latest_feedback[p.id].feedback_text if p.id in latest_feedback else None,
+                "feedback_structured": (
+                    _parse_structured(latest_feedback[p.id].sentiment_notes) if p.id in latest_feedback else None
+                ),
             }
             for p in posts
         ],

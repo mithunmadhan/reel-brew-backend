@@ -24,5 +24,6 @@ async def generate_feedback(post_id: uuid.UUID, db: Session = Depends(get_db)) -
         "post_id": str(post_id),
         "ai_feedback_id": str(result["ai_feedback_id"]),
         "feedback_text": result["feedback_text"],
+        "structured": result.get("structured"),
         "model_used": "gemini-2.5-flash",
     }
