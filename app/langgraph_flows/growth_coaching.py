@@ -3,7 +3,7 @@ import os
 import re
 import tempfile
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import TypedDict
 
 import cv2
@@ -153,8 +153,35 @@ def _build_structured_prompt(state: "GrowthCoachingState") -> str:
         "from that post, such as its date and hashtag count, so the creator knows exactly which "
         "post you mean. If the data is too thin for an example, give fewer. Do not pad.\n"
         "- The sample is small. Do not claim one thing caused another.\n"
-        "- Do not mention audio or spoken words; you have not heard the video."
+        "- Do not mention audio or spoken words; you have not heard the video.\n"
+        "- Never mention \"notes\", earlier analysis, or how this feedback was produced — write as "
+        "if you are looking directly at the posts.\n"
+        "- An example's ref is the post that serves as EVIDENCE for its point. Prefer another post "
+        "(P#) that shows what works or what's different. Use THIS only for a fact about the current "
+        "post that cannot be shown through another post.\n"
+        "- Each example must make a different point. Do not repeat the same observation within a "
+        "category or across categories."
     )
+
+
+_THIS_TOKEN_RE = re.compile(r"\bPost\s+THIS\b|\bTHIS\b", re.IGNORECASE)
+_PREF_TOKEN_RE = re.compile(r"\bP(\d+)\b", re.IGNORECASE)
+
+
+def _humanize_refs(text: str, refs: dict) -> str:
+    """Rewrite internal ref tokens (THIS, P1, P2, ...) into reader-facing phrasing."""
+    if not text:
+        return text
+    text = _THIS_TOKEN_RE.sub("this post", text)
+
+    def _repl_pref(match: re.Match) -> str:
+        ref = refs.get(f"P{match.group(1)}")
+        if ref and ref.get("date"):
+            d = date.fromisoformat(ref["date"])
+            return f"your {d.day} {d.strftime('%b')} post"
+        return "an earlier post"
+
+    return _PREF_TOKEN_RE.sub(_repl_pref, text)
 
 
 def _clean_structured(raw: dict, recent_posts: list[dict], post_id: uuid.UUID, this_caption: str | None,
@@ -193,7 +220,11 @@ def _clean_structured(raw: dict, recent_posts: list[dict], post_id: uuid.UUID, t
             observation, suggestion = text_of(ex.get("observation")), text_of(ex.get("suggestion"))
             if ref is None or not observation:
                 continue
-            examples.append({"post": ref, "observation": observation, "suggestion": suggestion})
+            examples.append({
+                "post": ref,
+                "observation": _humanize_refs(observation, refs),
+                "suggestion": _humanize_refs(suggestion, refs),
+            })
         result[key] = {"summary": text_of(block.get("summary")), "examples": examples}
     return result
 

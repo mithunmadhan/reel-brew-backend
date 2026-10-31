@@ -364,8 +364,15 @@
       var body = el("div", "cat-body"); body.hidden = true;
       (block.examples || []).forEach(function (ex) {
         var row = el("div", "ex");
-        var when = ex.post && ex.post.date ? new Date(ex.post.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : null;
-        row.appendChild(el("div", "from", "From your post" + (when ? " on " + when : "") + (ex.post && ex.post.snippet ? ": “" + ex.post.snippet + "”" : "")));
+        var quote = ex.post && ex.post.snippet ? ": “" + ex.post.snippet + "”" : "";
+        var label;
+        if (ex.post && ex.post.post_id === p.post_id) {
+          label = "This post" + quote;
+        } else {
+          var when = ex.post && ex.post.date ? new Date(ex.post.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : null;
+          label = "From your post" + (when ? " on " + when : "") + quote;
+        }
+        row.appendChild(el("div", "from", label));
         row.appendChild(el("div", null, ex.observation));
         if (ex.suggestion) row.appendChild(el("div", "fix", "Try: " + ex.suggestion));
         body.appendChild(row);
