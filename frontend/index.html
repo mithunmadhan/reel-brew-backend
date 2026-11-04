@@ -82,6 +82,9 @@
     <p style="margin:20px 0 0; font-size:0.85rem;">
       <a href="dashboard.html" style="color:#7c3aed; font-weight:600; text-decoration:none;">Open my dashboard &rarr;</a>
     </p>
+    <p style="margin:10px 0 0; font-size:0.85rem;">
+      <a id="switch-btn" href="#" style="color:#6b7280; font-weight:600; text-decoration:none;">Connect a different Instagram account</a>
+    </p>
   </main>
 
   <script>
@@ -95,6 +98,13 @@
 
     document.getElementById("connect-btn").addEventListener("click", function () {
       window.location.href = apiBase + "/auth/instagram/connect";
+    });
+
+    document.getElementById("switch-btn").addEventListener("click", function (ev) {
+      ev.preventDefault();
+      // force_reauth makes Instagram show its login screen even if this
+      // browser is already signed into another Instagram account.
+      window.location.href = apiBase + "/auth/instagram/connect?switch=true";
     });
   </script>
 </body>

@@ -16,8 +16,8 @@ router = APIRouter(prefix="/auth/instagram", tags=["instagram-oauth"])
 
 
 @router.get("/connect")
-def connect(state: str | None = None) -> RedirectResponse:
-    return RedirectResponse(instagram_oauth.build_authorization_url(state=state))
+def connect(state: str | None = None, switch: bool = False) -> RedirectResponse:
+    return RedirectResponse(instagram_oauth.build_authorization_url(state=state, force_reauth=switch))
 
 
 @router.get("/callback")

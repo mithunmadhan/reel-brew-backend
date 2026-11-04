@@ -17,7 +17,7 @@ SCOPES = (
 )
 
 
-def build_authorization_url(state: str | None = None) -> str:
+def build_authorization_url(state: str | None = None, force_reauth: bool = False) -> str:
     settings = get_settings()
     params = {
         "client_id": settings.meta_app_id,
@@ -27,6 +27,11 @@ def build_authorization_url(state: str | None = None) -> str:
     }
     if state:
         params["state"] = state
+    if force_reauth:
+        # Forces the Instagram login prompt even if the browser already has an
+        # active session, so people can connect a different account without
+        # first logging out manually.
+        params["force_reauth"] = "true"
     return f"{AUTHORIZATION_URL}?{urlencode(params)}"
 
 
