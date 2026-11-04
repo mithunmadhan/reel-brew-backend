@@ -92,6 +92,7 @@ async def refresh_profile(social_account_id: uuid.UUID, db: Session) -> SocialAc
         raise SocialAccountNotFoundError(f"No social_account with id {social_account_id}")
 
     profile = await fetch_profile(social_account.access_token)
+    social_account.username = profile.get("username", social_account.username)
     social_account.follower_count = profile.get("followers_count")
     db.commit()
     db.refresh(social_account)
